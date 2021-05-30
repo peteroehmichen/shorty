@@ -1,6 +1,4 @@
-if (process.env.NODE_ENV !== "production") {
-    require("dotenv").config();
-}
+require("dotenv").config();
 
 const express = require("express");
 const { getAll, addCode, getURL } = require("./db");
@@ -9,6 +7,15 @@ const app = express();
 const hb = require("express-handlebars");
 app.engine("handlebars", hb());
 app.set("view engine", "handlebars");
+
+const sanitizeInput = function (req, res, next) {
+    let string = req.body?.fullUrl || req.params?.code;
+    if (string) {
+        const condition = /[&<>'"`=]/g;
+        req.body.sanitizedInput = string.replace(condition, "");
+    }
+    next();
+};
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -28,9 +35,9 @@ app.get("/", async (req, res) => {
     });
 });
 
-app.post("/addCode", async (req, res) => {
+app.post("/addCode", sanitizeInput, async (req, res) => {
     try {
-        await addCode(req.body.fullUrl);
+        await addCode(req.body.sanitizedInput);
         res.redirect("/");
     } catch (error) {
         console.log("uncaught error: ", error);
@@ -38,10 +45,10 @@ app.post("/addCode", async (req, res) => {
     }
 });
 
-app.get("/:code", async (req, res) => {
+app.get("/:code", sanitizeInput, async (req, res) => {
     try {
-        const { rows } = await getURL(req.params.code);
-        res.redirect(rows[0].original_url);
+        const { rows } = await getURL(req.body.sanitizedInput);
+        res.redirect(rows[0]?.original_url || "/");
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
