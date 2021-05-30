@@ -1,0 +1,11 @@
+<p>Your generated code is <b>{{code}}</b></p>
+
+<button onclick="clipboard('{{code}}')" class="btn btn-success">Copy full Link
+    to Clipboard</button>
+<script>
+    function clipboard (code) { var el = document.createElement('textarea');
+    el.value = window.location.host + "/" + code; el.setAttribute('readonly',
+    ''); el.style.position = 'absolute'; el.style.left =
+    '-9999px';document.body.appendChild(el); el.select();
+    document.execCommand('copy'); document.body.removeChild(el); }
+</script>

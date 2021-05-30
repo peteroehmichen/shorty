@@ -8,6 +8,10 @@ const hb = require("express-handlebars");
 app.engine("handlebars", hb());
 app.set("view engine", "handlebars");
 
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.static("./public"));
+
 const sanitizeInput = function (req, res, next) {
     let string = req.body?.fullUrl || req.params?.code;
     if (string) {
@@ -17,30 +21,38 @@ const sanitizeInput = function (req, res, next) {
     next();
 };
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(express.static("./public"));
-
 app.get("/", async (req, res) => {
-    let list = [];
-    try {
-        const result = await getAll();
-        list = result.rows;
-    } catch (error) {
-        console.log("uncaught error: ", error);
-    }
-    return res.render("overview", {
+    res.render("overview", {
         layout: "main",
-        list,
     });
 });
 
 app.post("/addCode", sanitizeInput, async (req, res) => {
     try {
-        await addCode(req.body.sanitizedInput);
-        res.redirect("/");
+        const code = await addCode(req.body.sanitizedInput);
+        res.render("overview", {
+            layout: "main",
+            code,
+        });
     } catch (error) {
-        console.log("uncaught error: ", error);
+        console.log("Error while adding Code: ", error);
+        res.redirect("/");
+    }
+});
+
+app.post("/unlock", async (req, res) => {
+    try {
+        let list;
+        if (req.body.password == process.env.ADMIN) {
+            const { rows } = await getAll();
+            list = rows ? rows : [];
+        }
+        res.render("overview", {
+            layout: "main",
+            list,
+        });
+    } catch (error) {
+        console.log("Error while unlocking:", error);
         res.redirect("/");
     }
 });
@@ -54,10 +66,7 @@ app.get("/:code", sanitizeInput, async (req, res) => {
         res.sendStatus(500);
     }
 });
-app.get("*", async (req, res) => {
-    res.sendStatus(404);
-});
 
 app.listen(process.env.PORT, () => {
-    console.log("Shorty is running");
+    console.log("URLShortener is running");
 });

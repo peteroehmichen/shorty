@@ -1,7 +1,8 @@
-<h2>previous data</h2>
-<table>
-    <thead>
-        <tr><td>URL</td><td>Shortify</td><td>Called</td><td>Encoded</td></tr>
+<h2>List of all encoded URLs</h2>
+<table class="table table-hover">
+    <thead class="thead-dark">
+        <td><b>URL</b></td><td><b>Shortified</b></td><td><b>Called</b></td><td
+        ><b>Encoded</b></td>
     </thead>
     <tbody>
         {{#list}}
@@ -10,8 +11,10 @@
                 <td>{{code}}</td>
                 <td>{{accessed_count}}</td>
                 <td>{{created_count}}</td>
-                <td><button onclick="clipboard('{{code}}')">Copy to Clipboard</button></td>
-                <td><a href="/{{code}}">Go To</a></td>
+                <td><button
+                        onclick="clipboard('{{code}}')"
+                        class="btn btn-light"
+                    >Copy to Clipboard</button></td>
             </tr>
         {{/list}}
     </tbody>
