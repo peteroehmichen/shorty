@@ -22,7 +22,7 @@ app.get("/", async (req, res) => {
     } catch (error) {
         console.log("uncaught error: ", error);
     }
-    res.render("overview", {
+    return res.render("overview", {
         layout: "main",
         list,
     });

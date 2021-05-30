@@ -14,7 +14,6 @@ if (process.env.NODE_ENV === "production") {
 const sql = new Client(connection);
 sql.connect();
 
-console.log("DB:", process.env.DATABASE_URL);
 module.exports.getAll = function () {
     return sql.query("SELECT * FROM urls ORDER BY last_updated DESC;");
 };
