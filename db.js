@@ -3,9 +3,18 @@ const { customAlphabet } = require("nanoid/non-secure");
 const getNewCode = customAlphabet(urlAlphabet, 5);
 
 const { Client } = require("pg");
-const sql = new Client(process.env.DATABASE_URL);
+const connection = {
+    connectionString: process.env.DATABASE_URL,
+};
+if (process.env.NODE_ENV === "production") {
+    connection.ssl = {
+        rejectUnauthorized: false,
+    };
+}
+const sql = new Client(connection);
 sql.connect();
 
+console.log("DB:", process.env.DATABASE_URL);
 module.exports.getAll = function () {
     return sql.query("SELECT * FROM urls ORDER BY last_updated DESC;");
 };
