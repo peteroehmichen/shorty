@@ -1,0 +1,25 @@
+<h2>previous data</h2>
+<table>
+    <thead>
+        <tr><td>URL</td><td>Shortify</td><td>Called</td><td>Encoded</td></tr>
+    </thead>
+    <tbody>
+        {{#list}}
+            <tr>
+                <td>{{original_url}}</td>
+                <td>{{code}}</td>
+                <td>{{accessed_count}}</td>
+                <td>{{created_count}}</td>
+                <td><button onclick="clipboard('{{code}}')">Copy to Clipboard</button></td>
+                <td><a href="/{{code}}">Go To</a></td>
+            </tr>
+        {{/list}}
+    </tbody>
+</table>
+<script>
+    function clipboard (code) { var el = document.createElement('textarea');
+    el.value = window.location.host + "/" + code; el.setAttribute('readonly',
+    ''); el.style.position = 'absolute'; el.style.left =
+    '-9999px';document.body.appendChild(el); el.select();
+    document.execCommand('copy'); document.body.removeChild(el); }
+</script>
